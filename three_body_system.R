@@ -1,3 +1,6 @@
+rm(list=ls())
+source("updater.R")
+source("updater_unittest.R")
 get.prob <- function(x,para){
   theta <- para[1]
   # 2体相互作用
@@ -16,7 +19,6 @@ simulate.three.body.system <- function(iteration.number=100,parameter=0.2, selec
   # Updaterの取得
   selector <- get.selector(degreeoffreedom=length(x), type=selector.type)
   updater  <- get.updater(updater.type="Metropolis"
-                          ,variable.selector=selector
                           ,fun.prob=function(x){
                             get.prob(x=x,para=parameter)
                           }
@@ -25,7 +27,7 @@ simulate.three.body.system <- function(iteration.number=100,parameter=0.2, selec
   v <- matrix(nrow=iteration.number + 1, ncol=length(x), byrow=T)
   v[1,] <- x
   for (n in seq(1:iteration.number)){
-    v[n+1,] <- updater(v[n,])
+    v[n+1,] <- updater(v[n,], selector())
   }
   v
 }

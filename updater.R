@@ -2,9 +2,8 @@
 #' updater(x)
 get.updater <- function(updater.type="Metropolis", variable.selector, fun.prob) {
   f <- switch(updater.type,
-              "Metropolis" = updater.metropolis(variable.selector=variable.selector
-                                                ,fun.prob=fun.prob
-                                                ,candidate.sampler=candidate.sampler.ising)
+              "Metropolis" = updater.metropolis(fun.prob=fun.prob
+                                                ,candidate.sampler=candidate.sampler.reverse)
   )
   f
 }
@@ -28,9 +27,8 @@ get.selector <- function(degreeoffreedom, type){
   f
 }
 
-updater.metropolis <- function(variable.selector, fun.prob, candidate.sampler){
-  index <- variable.selector()
-  f <- function(x){
+updater.metropolis <- function(fun.prob, candidate.sampler){
+  f <- function(x,index){
     x.old <- x
     p.this <- fun.prob(x)
     x[index] <- candidate.sampler(x[index])
@@ -46,7 +44,7 @@ updater.metropolis <- function(variable.selector, fun.prob, candidate.sampler){
   f
 }
 
-candidate.sampler.ising <- function(x){
+candidate.sampler.reverse <- function(x){
   -x
 }
 
