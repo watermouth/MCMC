@@ -30,9 +30,23 @@ test.updater.metropolis <- function(){
   x <- updater(x)
   stopifnot( x == -1)
   x <- updater(x)
-  stopifnot( x == 1 )
-  
+  stopifnot( x == 1)
 }
+
+test.updater.metropolis.2 <- function(){
+  selector <- get.selector(degreeoffreedom=1,type="sequential")
+  fun.prob <- function(x){sum(x)} 
+  updater <- updater.metropolis(fun.prob=fun.prob,candidate.sampler=candidate.sampler.reverse)
+  x <- c(1,1)
+  r <- 2 / (2) 
+  stopifnot( r == 1 )
+  # 1 >= 1 なのでほぼ必ず棄却される
+  x <- updater(x)
+  stopifnot( sum(x) == 2)
+  x <- updater(x)
+  stopifnot( sum(x) == 2)
+}
+
 
 test.get.selector()
 test.candidate.sampler.reverse()
