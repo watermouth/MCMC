@@ -32,6 +32,8 @@ simulate.three.body.system <- function(iteration.number=100,parameter=0.2, selec
   v
 }
 
-# Initialize
-
-# plot(x=z, y=sapply(X=z, FUN=function(i){prob_numerator(c(-1,-1,-1),para=i)}))
+iteration.number <- 100
+x <- simulate.three.body.system(iteration.number=iteration.number)
+matplot(x=seq(1:(iteration.number+1))
+        , y=sapply(X=seq(1:3),FUN=function(i){cumsum(x=x[,i]) / cumsum(1:(iteration.number+1))})
+        ,pch=c(20,20,20))
