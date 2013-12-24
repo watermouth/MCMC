@@ -32,8 +32,11 @@ simulate.three.body.system <- function(iteration.number=100,parameter=0.2, selec
   v
 }
 
-iteration.number <- 100
-x <- simulate.three.body.system(iteration.number=iteration.number)
-matplot(x=seq(1:(iteration.number+1))
-        , y=sapply(X=seq(1:3),FUN=function(i){cumsum(x=x[,i]) / cumsum(1:(iteration.number+1))})
+iteration.number <- 10000
+burnin.num <- 2000
+x <- simulate.three.body.system(iteration.number=iteration.number,parameter=0.8, selector.type="sequential")
+# burn in
+x <- x[-(1:(burnin.num+1)),]
+matplot(x=seq(1:nrow(x))
+        , y=sapply(X=seq(1:3),FUN=function(i){cumsum(x=x[,i]) / c(1:nrow(x))})
         ,pch=c(20,20,20))
