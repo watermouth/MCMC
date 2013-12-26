@@ -2,14 +2,14 @@
 #' FUNで指定した量の統計量の計算
 #' out.step 結果を返すstep（burninを除く)
 #' samples matrix(row: MCMC step, column: variables)
-stat.fun <- function (sample.fun=mean, quantity.fun=function(x){x[1]}, samples, out.steps, burnin=(0.2 * nrow(samples))){
+stat.fun <- function (quantity.fun=function(x){x[1]}, samples, out.steps, burnin=(0.2 * nrow(samples))){
   if(nrow(samples) <= burnin){
     stop("burn in period is too small")
   }
-  x <- matrix(data=samples[(burnin+1):(nrow(samples)),])
+  x <- matrix(data=samples[(burnin+1):nrow(samples),], nrow=nrow(samples) - burnin)
   out <- sapply(X=out.steps, FUN=
            function(i){
-             sample.fun(
+             mean(
                sapply(X=(1:i), FUN=function(j){ quantity.fun(x[j,]) }
                )
              )
