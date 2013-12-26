@@ -21,15 +21,19 @@ simulate <- function(initial.state, fun.prob, iteration.number=100, updater.type
 # initial.state のサイズが大きいと発散して計算できない...
 example.exec <- function(iteration.number=30000
                          , burnin.num=1000
-                         , theta=0.4
+                         , para=list(theta=0.4, ncol=3, nrow=3)
                          , initial.state=c(1,1,1)
                          , updater.type="Metropolis"
+                         , model="Global"
 ){
-  source("global_two_body_coupling_system.R")
+  switch(model,
+         "Global" = source("global_two_body_coupling_system.R")
+         , "NN" = source("nearest_neighbor_coupling_system.R")
+  )
   fun.prob <- switch(updater.type,
-                     "Metropolis" = function(x){get.prob(x=x, para=theta)}
+                     "Metropolis" = function(x){get.prob(x=x, para=para$theta)}
                      , "MetropolisRevised" = function(x,index,x.candidate){
-                       get.prob.ratio(x=x,index=index,x.candidate=x.candidate,para=theta)
+                       get.prob.ratio(x=x,index=index,x.candidate=x.candidate,para=para)
                      })
   x <- simulate(initial.state=initial.state
                 , fun.prob=fun.prob
@@ -61,16 +65,19 @@ example.exec <- function(iteration.number=30000
 }
 
 # example
-initial.state <- c(rep(-1,10), rep(1,10))
-set.seed(seed=1000)
+# initial.state <- c(rep(-1,1), rep(1,2))
+# set.seed(seed=1000)
 #example.exec(iteration.number=30000
 #              ,burnin.num=1000,theta=0.4
 #              ,updater.type="Metropolis")
 
+initial.state <- rep(1, 9)
+para <- list(theta=0.1, ncol=3, nrow=3)
 set.seed(seed=1000)
-example.exec(iteration.number=3000000
-             ,burnin.num=3000
+browser()
+example.exec(iteration.number=3000,model="NN"
+             ,burnin.num=30
              ,initial.state=initial.state
-             ,theta=0.4
+             ,para=para
              ,updater.type="MetropolisRevised")
 
