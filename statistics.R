@@ -18,6 +18,13 @@ stat.fun <- function (quantity.fun=function(x){x[1]}, samples, out.steps, burnin
   out
 }
 
+get.stat.fun <- function (samples, out.steps, burnin){
+  f <- function(fun){
+    stat.fun(quantity.fun=fun,samples=samples,out.steps=out.steps,burnin=burnin)
+  }
+  f
+}
+
 test.stat.fun <- function (){
   samples <- 1:10
   stopifnot( mean(1:10) == stat.fun(samples=matrix(data=samples, ncol=1),out.steps=10,burnin=0))
@@ -36,9 +43,6 @@ test.stat.fun <- function (){
   out <- stat.fun(samples=matrix(data=samples.2, ncol=2),out.steps=c(3,5),burnin=0)
   stopifnot( 3 == out[1])
   stopifnot( 5 == out[2])
-  out <- stat.fun(sample.fun=sum, samples=matrix(data=samples.2, ncol=2),out.steps=c(3,5),burnin=0)
-  stopifnot( 9  == out[1])
-  stopifnot( 25 == out[2])
 }
 
 test.stat.fun()
