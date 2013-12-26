@@ -1,5 +1,5 @@
 get.prob <- function(x,para){
-  theta <- para[1]
+  theta <- para$theta
   # 2体相互作用
   inner_vec <- theta * combn(x=x,m=2,FUN=function(y){y[1] * y[2]})
   inner_term <- sum(inner_vec)
@@ -8,12 +8,12 @@ get.prob <- function(x,para){
 
 get.prob.ratio <- function(x, index, x.candidate, para){
   stopifnot(length(index) == length(x.candidate))
-  exp(para * sum(x[-index]) * (x.candidate - x[index]))
+  exp(para$theta * sum(x[-index]) * (x.candidate - x[index]))
 }
 
 test.get.prob.ratio <- function(){
   eps <- 10^-15
-  para <- 0.1
+  para <- list(theta=0.1)
   x <- c(1,1,1)
   index <- 1
   x.candidate <- c(-1,1,1)
@@ -21,7 +21,7 @@ test.get.prob.ratio <- function(){
   error <- abs((get.prob(x=x.candidate, para=para) / get.prob(x=x, para=para)) - ratio) / ratio 
   stopifnot(error < eps)
   
-  para <- 1 
+  para <- list(theta=1) 
   x <- rep(1,10) 
   index <- 5
   x.candidate <- c(1,1,1,1,-1,rep(1,5)) 
@@ -29,7 +29,7 @@ test.get.prob.ratio <- function(){
   error <- abs((get.prob(x=x.candidate, para=para) / get.prob(x=x, para=para)) - ratio) / ratio 
   stopifnot(error < eps) 
   
-  para <- 0.4
+  para <- list(theta=0.4)
   x <- rep(1,100) 
   index <- 5
   x.candidate <- c(1,1,1,1,-1,rep(1,95)) 
