@@ -20,10 +20,10 @@ simulate <- function(initial.state, fun.prob, iteration.number=100, updater.type
 
 # initial.state のサイズが大きいと発散して計算できない...
 example.exec <- function(iteration.number=30000
-                    , burnin.num=1000
-                    , theta=0.4
-                    , initial.state=c(1,1,1)
-                    , updater.type="Metropolis"
+                         , burnin.num=1000
+                         , theta=0.4
+                         , initial.state=c(1,1,1)
+                         , updater.type="Metropolis"
 ){
   source("global_two_body_coupling_system.R")
   fun.prob <- switch(updater.type,
@@ -50,20 +50,27 @@ example.exec <- function(iteration.number=30000
   out.y <- prepared.stat.fun(function(x){x[1]*x[2]})
   plot(x=mcs, y=out.y, type="l", ylim=c(-1,1))
   title(main="expectation of x[1]*x[2]")
-  analytic.y <- ((2*exp(3*theta) - 2*exp(-theta)) / (2*exp(3*theta) + 6*exp(-theta)))
-  lines(x=mcs, y=rep(x=analytic.y, length(mcs)), col="red")
+  if(length(initial.state) == 3){
+    analytic.y <- ((2*exp(3*theta) - 2*exp(-theta)) / (2*exp(3*theta) + 6*exp(-theta)))
+    lines(x=mcs, y=rep(x=analytic.y, length(mcs)), col="red")
+  }
   
-  summary(x)
+  print(summary(x))
+  
+  print(summary(out.y))
 }
 
 # example
-initial.state <- rep(1,5)
+initial.state <- c(rep(-1,10), rep(1,10))
 set.seed(seed=1000)
-example.exec(initial.state=initial.state
-             ,burnin.num=1000,theta=0.4
-             ,updater.type="Metropolis")
+#example.exec(iteration.number=30000
+#              ,burnin.num=1000,theta=0.4
+#              ,updater.type="Metropolis")
+
 set.seed(seed=1000)
-example.exec(initial.state=initial.state
-             ,burnin.num=1000,theta=0.4
+example.exec(iteration.number=3000000
+             ,burnin.num=3000
+             ,initial.state=initial.state
+             ,theta=0.4
              ,updater.type="MetropolisRevised")
 
