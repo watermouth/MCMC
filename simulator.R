@@ -18,12 +18,13 @@ simulate <- function(initial.state, fun.prob, iteration.number=100, selector.typ
   v
 }
 
-example <- function(){
+# initial.state のサイズが大きいと発散して計算できない...
+example <- function(initial.state=c(1,1,1)){
   source("three_body_system.R")
   iteration.number <- 30000
   burnin.num <- 1000
   theta <- 0.4
-  x <- simulate(initial.state=c(-1,1,-1)
+  x <- simulate(initial.state=initial.state
                 , fun.prob=function(x){get.prob(x=x, para=theta)}
                 , iteration.number=iteration.number
                 , selector.type="random"
@@ -45,4 +46,5 @@ example <- function(){
   lines(x=mcs, y=rep(x=analytic.y, length(mcs)), col="red")
 }
 
-example()
+example(initial.state=rep(1,3))
+
