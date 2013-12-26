@@ -74,7 +74,6 @@ example.exec <- function(iteration.number=30000
 initial.state <- rep(1, 9)
 para <- list(theta=0.1, ncol=3, nrow=3)
 set.seed(seed=1000)
-browser()
 example.exec(iteration.number=3000,model="NN"
              ,burnin.num=30
              ,initial.state=initial.state
