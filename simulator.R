@@ -4,19 +4,31 @@ source("updater_unittest.R")
 source("statistics.R")
 
 #' サイズがメモリ上に乗るくらいに小さい場合はこれを使用できる.
-simulate <- function(initial.state, fun.prob, iteration.number=100, updater.type="MetropolisRevised", selector.type="sequential"){
+simulate <- function(initial.state
+                     , fun.prob
+                     , iteration.number=100
+                     , burnin=10
+                     , updater.type="MetropolisRevised"
+                     , selector.type="sequential"
+                     , seed=1000
+){
   # 初期化
+  set.seed(seed)
   x <- initial.state 
   # Updaterの取得
   selector <- get.selector(degreeoffreedom=length(x), type=selector.type)
   updater  <- get.updater(updater.type=updater.type, fun.prob=fun.prob)
+  # burnin
+  for (n in seq(1:burnin)){
+    x <- updater(x, selector())
+  }
   # LOOP
   v <- matrix(nrow=iteration.number + 1, ncol=length(x), byrow=T)
   v[1,] <- x
   for (n in seq(1:iteration.number)){
     v[n+1,] <- updater(v[n,], selector())
   }
-  v
+  v[-1,]
 }
 
 simulate.sequentially <- function(initial.state
@@ -26,23 +38,26 @@ simulate.sequentially <- function(initial.state
                                   , burnin.number=10
                                   , iteration.steps=seq(from=burnin.number, to=iteration.number,by=burnin.number)
                                   , updater.type="MetropolisRevised"
-                                  , selector.type="sequential"){
+                                  , selector.type="sequential"
+                                  , seed=1000
+){
   # 初期化
+  set.seed(seed)
   x <- initial.state 
   # Updaterの取得
   selector <- get.selector(degreeoffreedom=length(x), type=selector.type)
   updater  <- get.updater(updater.type=updater.type, fun.prob=fun.prob)
   # LOOP
   s <- x
-  v <- 0
   for (n in seq(1:burnin.number)){
     s <- updater(s, selector())
   }
   out <- vector(mode="double", length=length(iteration.steps))
   out.idx <- 1
   n <- 1
+  v <- 0
   for (iteration.step in iteration.steps){
-    while(n < iteration.step){
+    while(n <= iteration.step){
       s <- updater(s, selector())
       v <- v + extractor(s)
       n <- n+1
@@ -74,21 +89,24 @@ example.exec <- function(iteration.number=30000
                        get.prob.ratio(x=x,index=index,x.candidate=x.candidate,para=para)
                      })
   stopifnot(iteration.number > burnin.num)
-  out.x <- seq(from=burnin.num, to=iteration.number - burnin.num, by=(length(initial.state) * burnin.num))
+  out.x <- seq(from=burnin.num, to=iteration.number, by=burnin.num)
   extractor <- function(x){x[1]}
   
   if(batch){
-    x <- simulate(initial.state=initial.state
+    x <- simulate(initial.state=initial.state,seed=1000
                   , fun.prob=fun.prob
                   , updater.type=updater.type
                   , iteration.number=iteration.number
+                  , burnin=burnin.num
                   , selector.type=selector.type
     )
     print(summary(x))
-    prepared.stat.fun <- get.stat.fun(samples=x, out.steps=out.x, burnin=burnin.num)
+#     print(x)
+    # ここでburninを指定すると2重指定になる
+    prepared.stat.fun <- get.stat.fun(samples=x, out.steps=out.x, burnin=0)
     out.y <- prepared.stat.fun(extractor)
   } else {
-    out.y <- simulate.sequentially(initial.state=initial.state
+    out.y <- simulate.sequentially(initial.state=initial.state,seed=1000
                                    ,fun.prob=fun.prob
                                    ,extractor=extractor
                                    ,iteration.number=iteration.number
@@ -98,6 +116,9 @@ example.exec <- function(iteration.number=30000
                                    ,selector.type=selector.type
     )
   }
+#   print(out.y)
+  print(summary(out.y))
+  
   mcs <- out.x / length(initial.state)
   plot(x=mcs, y=out.y, type="l", ylim=c(-1,1))
   analytic.y <- 0
@@ -118,28 +139,27 @@ example.exec <- function(iteration.number=30000
                                    ,selector.type=selector.type
     )
   }
+#   print(out.y)
+  print(summary(out.y))
   plot(x=mcs, y=out.y, type="l", ylim=c(-1,1))
   title(main="expectation of x[1]*x[2]")
   if(length(initial.state) == 3){
     analytic.y <- ((2*exp(3*theta) - 2*exp(-theta)) / (2*exp(3*theta) + 6*exp(-theta)))
     lines(x=mcs, y=rep(x=analytic.y, length(mcs)), col="red")
   }
-  
-  print(summary(out.y))
 }
 
 # example
-initial.state <- rep(1, 100)
-para <- list(theta=0.1, ncol=10, nrow=10)
-set.seed(seed=1000)
-example.exec(iteration.number=3000,model="NN",selector.type="random",batch=F
-             ,burnin.num=3
+initial.state <- rep(1, 9)
+para <- list(theta=0.1, ncol=3, nrow=3)
+example.exec(iteration.number=1000,model="NN",selector.type="sequential",batch=T
+             ,burnin.num=200
              ,initial.state=initial.state
              ,para=para
              ,updater.type="MetropolisRevised")
 
-example.exec(iteration.number=3000,model="NN",selector.type="random",batch=T
-             ,burnin.num=3
+example.exec(iteration.number=1000,model="NN",selector.type="sequential",batch=F
+             ,burnin.num=200
              ,initial.state=initial.state
              ,para=para
              ,updater.type="MetropolisRevised")
