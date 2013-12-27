@@ -1,6 +1,7 @@
 #' Introducing Monte Carlo Methods with R
 #' 
-problem6.1 <- function(x0=0, rho = 0.9, eps.mean=0, eps.sd=1, step.size=100000) {
+problem6.1 <- function(x0=0, rho = 0.9, eps.mean=0, eps.sd=1, step.size=100000, seed=1000) {
+  set.seed(seed)
   # x[1] = rho * x0 + eps1
   # x[2] = rho *(x[1]) + eps2 = rho^2 * x0 + rho * eps1 + eps2
   # x[3] = rho *(x[2]) + eps3 = rho^3 * x0 + rho^2 * eps1 + rho * eps2 + eps3
@@ -17,5 +18,4 @@ problem6.1 <- function(x0=0, rho = 0.9, eps.mean=0, eps.sd=1, step.size=100000) 
   # stationary process => x[t] follows normal distribution
   x.points <- seq(from=min(x), to=max(x), by=0.5)
   lines(x=x.points, y=dnorm(x=x.points,mean=0, sd=sqrt(1/(1-rho*rho))), col="red")
-  
 }
