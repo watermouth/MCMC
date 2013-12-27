@@ -150,16 +150,16 @@ example.exec <- function(iteration.number=30000
 }
 
 # example
-initial.state <- rep(1, 9)
-para <- list(theta=0.1, ncol=3, nrow=3)
-example.exec(iteration.number=1000,model="NN",selector.type="sequential",batch=T
-             ,burnin.num=200
-             ,initial.state=initial.state
-             ,para=para
-             ,updater.type="MetropolisRevised")
+initial.state <- rep(1, 10000)
+para <- list(theta=0.4, ncol=100, nrow=100)
+# example.exec(iteration.number=1000,model="NN",selector.type="sequential",batch=T
+#              ,burnin.num=200
+#              ,initial.state=initial.state
+#              ,para=para
+#              ,updater.type="MetropolisRevised")
 
-example.exec(iteration.number=1000,model="NN",selector.type="sequential",batch=F
-             ,burnin.num=200
+example.exec(iteration.number=100 * length(initial.state),model="NN",selector.type="sequential",batch=F
+             ,burnin.num=1*(length(initial.state))
              ,initial.state=initial.state
              ,para=para
              ,updater.type="MetropolisRevised")
