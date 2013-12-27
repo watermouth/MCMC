@@ -4,7 +4,7 @@
 #' samples matrix(row: MCMC step, column: variables)
 stat.fun <- function (quantity.fun=function(x){x[1]}, samples, out.steps, burnin=(0.2 * nrow(samples))){
   if(nrow(samples) <= burnin){
-    stop("burn in period is too small")
+    stop("burn in period is too big")
   }
   x <- matrix(data=samples[(burnin+1):nrow(samples),], nrow=nrow(samples) - burnin)
   out <- sapply(X=out.steps, FUN=
