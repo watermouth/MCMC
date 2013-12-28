@@ -9,7 +9,7 @@ Example2.8 <- function(a=2.7, b=6.3, a0=2, b0=6, sample.size=10000){
   f <- function(x){dbeta(x=x, shape1=a, shape2=b)}
   g <- function(x){dbeta(x=x, shape1=a0, shape2=b0)}
   f.over.g <- function(x){
-    dbeta(x=x, shape1=a, shape2=b) / dbeta(x=x, shape1=a0, shape2=b0)
+    f(x) / g(x)
   }
   # find maximum point of ratio target density over its proposal
   optimize.obj <- optimize(interval=c(0,1), maximum=T, f=f.over.g)
